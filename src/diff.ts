@@ -1,13 +1,45 @@
 /// <reference path="../typings/index.d.ts" />
 
 import * as Args from "./args";
-import PlayMusicCache from "./playMusicCache";
+import * as chalk from "chalk";
+import * as low from "lowdb";
+import * as mkdirp from "mkdirp";
+import * as os from "os";
+import PlayMusicCache, * as pmc from "./playMusicCache";
 import * as Promise from "promise";
+
+interface IDiffPlaylist {
+	name: string;
+	playlistId: string;
+	tracks: IDiffTrack[];
+}
+
+interface IDiffTrack {
+	album: string;
+	artist: string;
+	title: string;
+	trackId: string;
+}
 
 export default class Shuffler {
 	cache = new PlayMusicCache();
+	db = new low(this.getDBPath());
+
+	getDBPath(): string {
+		let home = process.env.LOCALAPPDATA;
+		if (!home) {
+			home = process.env.APPDATA;
+			if (!home) {
+				home = os.homedir();
+			}
+		}
+		const diffDir = `${home}/playlist-diff`;
+		mkdirp.sync(diffDir);
+		return `${diffDir}/diff.json`;
+	}
 
 	run(): void {
+		this.db.defaults({ playlists: [] }).value();
 		this.cache.login(Args.email, Args.password).then(() => {
 			let playlistPromise: Promise.IThenable<pm.PlaylistListItem[]>;
 			if (Args.input.length === 0) {
@@ -18,9 +50,7 @@ export default class Shuffler {
 			playlistPromise.then((playlists) => {
 				this.cache.populatePlaylistTracks(playlists).then((newPlaylists) => {
 					newPlaylists.forEach((playlist) => {
-						playlist.tracks.forEach((playlistTrack) => {
-							console.log(`${playlistTrack.track.artist} - "${playlistTrack.track.title}"`);
-						});
+						this.performDiff(playlist);
 					})
 					process.exit();
 				}, (error) => {
@@ -35,5 +65,75 @@ export default class Shuffler {
 			console.error(error);
 			process.exit();
 		});
+	}
+
+	performDiff(playlist: pmc.IPlaylistTrackContainer): void {
+		console.log(`Playlist "${playlist.playlist.name}":`);
+		const baseline = <IDiffPlaylist>this.db.get("playlists").find({playlistId: playlist.playlist.id}).value();
+		const current = this.createSerializablePlaylist(playlist);
+		if (baseline) {
+			const baselineFlags = {}, currentFlags = {};
+			baseline.tracks.forEach((baselineTrack) => {
+				baselineFlags[baselineTrack.trackId] = baselineTrack;
+			});
+			current.tracks.forEach((currentTrack) => {
+				if (baselineFlags[currentTrack.trackId]) {
+					delete baselineFlags[currentTrack.trackId];
+				} else {
+					currentFlags[currentTrack.trackId] = currentTrack;
+				}
+			});
+
+			// Display deleted tracks
+			let firstBaseline = true;
+			for (let baselineFlag in baselineFlags) {
+				if (baselineFlags.hasOwnProperty(baselineFlag)) {
+					const track: IDiffTrack = baselineFlags[baselineFlag];
+					if (firstBaseline) {
+						console.log("  Deleted tracks:");
+						firstBaseline = false;
+					}
+					console.log(chalk.red(`  ${track.artist} "${track.title}" (from ${track.album})"`));
+				}
+			}
+
+			// Display added tracks
+			let firstCurrent = true;
+			for (let currentFlag in currentFlags) {
+				if (currentFlags.hasOwnProperty(currentFlag)) {
+					const track: IDiffTrack = currentFlags[currentFlag];
+					if (firstCurrent) {
+						console.log("  Added tracks:");
+						firstCurrent = false;
+					}
+					console.log(chalk.green(`  ${track.artist} "${track.title}" (from ${track.album})"`));
+				}
+			}
+
+			if (firstBaseline && firstCurrent) {
+				console.log(chalk.blue("  Nothing has changed since the last comparison."));
+			}
+			this.db.get("playlists").find({playlistId: playlist.playlist.id}).assign(current).value();
+		} else {
+			console.log(chalk.blue("  No baseline to compare against. A baseline has been created."));
+			this.db.get("playlists").push(current).value();
+		}
+	}
+
+	createSerializablePlaylist(playlist: pmc.IPlaylistTrackContainer): IDiffPlaylist {
+		return {
+			name: playlist.playlist.name,
+			playlistId: playlist.playlist.id,
+			tracks: playlist.tracks.map((track) => this.createSerializableTrack(track))
+		};
+	}
+
+	createSerializableTrack(track: pm.PlaylistItem): IDiffTrack {
+		return {
+			album: track.track.album,
+			artist: track.track.artist,
+			title: track.track.title,
+			trackId: track.trackId
+		};
 	}
 }
