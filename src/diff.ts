@@ -26,9 +26,10 @@ export default class Shuffler {
 	db = new low(this.getDBPath());
 
 	getDBPath(): string {
-		let home = process.env.LOCALAPPDATA;
+		const penv: any = process.env;
+		let home = penv.LOCALAPPDATA;
 		if (!home) {
-			home = process.env.APPDATA;
+			home = penv.APPDATA;
 			if (!home) {
 				home = os.homedir();
 			}
