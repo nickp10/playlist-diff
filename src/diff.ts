@@ -2,11 +2,10 @@
 
 import * as Args from "./args";
 import * as chalk from "chalk";
-import * as low from "lowdb";
+import Lowdb = require("lowdb");
 import * as mkdirp from "mkdirp";
 import * as os from "os";
 import PlayMusicCache, * as pmc from "./playMusicCache";
-import * as Promise from "promise";
 
 interface IDiffPlaylist {
 	name: string;
@@ -23,7 +22,7 @@ interface IDiffTrack {
 
 export default class Shuffler {
 	cache = new PlayMusicCache();
-	db = new low(this.getDBPath());
+	db = new Lowdb(this.getDBPath());
 
 	getDBPath(): string {
 		const penv: any = process.env;
@@ -42,7 +41,7 @@ export default class Shuffler {
 	run(): void {
 		this.db.defaults({ playlists: [] }).value();
 		this.cache.login(Args.email, Args.password).then(() => {
-			let playlistPromise: Promise.IThenable<pm.PlaylistListItem[]>;
+			let playlistPromise: Promise<pm.PlaylistListItem[]>;
 			if (Args.input.length === 0) {
 				playlistPromise = this.cache.getAllPlaylists();
 			} else {

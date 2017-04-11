@@ -1,14 +1,13 @@
 {
   "name": "playlist-diff",
   "dependencies": {
-    "lowdb": "github:typicode/lowdb/lowdb.d.ts"
+    "argv": "registry:dt/argv#0.0.0+20160819231841",
+    "chalk": "registry:dt/chalk#0.4.0+20161012090828",
+    "mkdirp": "registry:dt/mkdirp#0.3.0+20160428043022"
   },
   "globalDependencies": {
-    "argv": "registry:dt/argv#0.0.0+20160523040018",
-    "chalk": "registry:dt/chalk#0.4.0+20160317120654",
-    "mkdirp": "registry:dt/mkdirp#0.3.0+20160317120654",
-    "node": "registry:env/node#6.0.0+20161019193037",
-    "playmusic": "github:nickp10/playmusic-typings/playmusic.d.ts",
-    "promise": "registry:dt/promise#7.1.1+20160602154553"
+    "lowdb": "registry:dt/lowdb#0.15.0+20170308104825",
+    "node": "registry:env/node#6.0.0+20170213133316",
+    "playmusic": "github:nickp10/playmusic-typings/playmusic.d.ts"
   }
 }
