@@ -40,7 +40,7 @@ export default class Shuffler {
 
 	run(): void {
 		this.db.defaults({ playlists: [] }).value();
-		this.cache.login(Args.email, Args.password).then(() => {
+		this.cache.loginWithToken(Args.androidId, Args.token).then(() => {
 			let playlistPromise: Promise<pm.PlaylistListItem[]>;
 			if (Args.input.length === 0) {
 				playlistPromise = this.cache.getAllPlaylists();
