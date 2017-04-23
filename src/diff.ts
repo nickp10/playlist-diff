@@ -39,7 +39,7 @@ export default class Shuffler {
 	}
 
 	run(): void {
-		this.db.defaults({ playlists: [] }).value();
+		this.db.defaults({ playlists: [] }).write();
 		this.cache.loginWithToken(Args.androidId, Args.token).then(() => {
 			let playlistPromise: Promise<pm.PlaylistListItem[]>;
 			if (Args.input.length === 0) {
@@ -113,10 +113,10 @@ export default class Shuffler {
 			if (firstBaseline && firstCurrent) {
 				console.log(chalk.blue("  Nothing has changed since the last comparison."));
 			}
-			this.db.get("playlists").find({playlistId: playlist.playlist.id}).assign(current).value();
+			this.db.get("playlists").find({playlistId: playlist.playlist.id}).assign(current).write();
 		} else {
 			console.log(chalk.blue("  No baseline to compare against. A baseline has been created."));
-			this.db.get("playlists").push(current).value();
+			this.db.get("playlists").push(current).write();
 		}
 	}
 
