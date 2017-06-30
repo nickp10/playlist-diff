@@ -18,18 +18,18 @@ _Note: I do not plan on making this end-user friendly with a GUI._
 	* Chocolatey (for Windows): `choco install nodejs.install`
 1. In the root directory of the module, run: `npm install`
 1. Compile the script by running: `npm run compile`
-1. Run the script `node build/index.js -e <EMAIL> -p <PASSWORD> -i <PLAYLIST>`
+1. Run the script `node build/index.js -a <ANDROID-ID> -t <TOKEN> -i <PLAYLIST>`
 
 Script Options
 ----
-**-e / --email**
+**-a / --androidId**
 
-_Required._ Specifies the email address to login with. 
+_Required._ Specifies the android ID to login with. 
 
 
-**-p / --password**
+**-t / --token**
 
-_Required._ Specifies the password to login with.
+_Required._ Specifies the token to login with.
 
 
 **-i / --input**

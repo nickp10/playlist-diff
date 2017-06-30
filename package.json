@@ -15,22 +15,24 @@
   "homepage": "https://github.com/nickp10/playlist-diff#readme",
   "scripts": {
     "compile": "gulp compile",
-    "gulp": "gulp",
-    "prepare": "typings install",
-    "typings": "typings"
+    "gulp": "gulp"
   },
   "dependencies": {
     "argv": "0.0.2",
-    "chalk": "^1.1.3",
+    "chalk": "^2.0.1",
     "lodash": "^4.17.4",
     "lowdb": "^0.16.2",
     "mkdirp": "^0.5.1",
-    "playmusic": "git+https://github.com/nickp10/playmusic.git#f5c39ff5b299d00ea842a1b0c02f11686a1b9979"
+    "playmusic": "github:nickp10/playmusic"
   },
   "devDependencies": {
+    "@types/argv": "0.0.4",
+    "@types/chalk": "^0.4.31",
+    "@types/lowdb": "^0.15.0",
+    "@types/mkdirp": "^0.3.29",
+    "@types/node": "^8.0.6",
     "gulp": "^3.9.1",
-    "gulp-typescript": "^3.1.6",
-    "typescript": "^2.2.2",
-    "typings": "^2.1.1"
+    "gulp-typescript": "^3.1.7",
+    "typescript": "^2.4.1"
   }
 }

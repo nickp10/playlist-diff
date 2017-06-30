@@ -1,5 +1,3 @@
-/// <reference path="../typings/index.d.ts" />
-
 import * as Args from "./args";
 import * as chalk from "chalk";
 import Lowdb = require("lowdb");
