@@ -2,7 +2,11 @@
   "name": "playlist-diff",
   "version": "1.0.0",
   "description": "Tracks differences in Google Play playlists over time",
+  "bin": "build/index.js",
   "main": "build/index.js",
+  "files": [
+    "build/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nickp10/playlist-diff.git"
@@ -14,25 +18,29 @@
   },
   "homepage": "https://github.com/nickp10/playlist-diff#readme",
   "scripts": {
+    "build": "gulp build",
+    "build-debug": "gulp build -e debug",
     "compile": "gulp compile",
-    "gulp": "gulp"
+    "compile-debug": "gulp compile -e debug",
+    "prepare": "npm run build",
+    "start": "node build/index.js"
   },
   "dependencies": {
     "argv": "0.0.2",
-    "chalk": "^2.0.1",
-    "lodash": "^4.17.4",
-    "lowdb": "^0.16.2",
+    "chalk": "^2.3.1",
+    "lodash": "^4.17.5",
+    "lowdb": "^1.0.0",
     "mkdirp": "^0.5.1",
     "playmusic": "github:nickp10/playmusic"
   },
   "devDependencies": {
     "@types/argv": "0.0.4",
-    "@types/chalk": "^0.4.31",
-    "@types/lowdb": "^0.15.0",
-    "@types/mkdirp": "^0.3.29",
-    "@types/node": "^8.0.6",
+    "@types/lowdb": "^1.0.0",
+    "@types/mkdirp": "^0.5.2",
+    "@types/node": "^9.4.6",
     "gulp": "^3.9.1",
-    "gulp-typescript": "^3.1.7",
-    "typescript": "^2.4.1"
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-typescript": "^4.0.1",
+    "typescript": "^2.7.2"
   }
 }

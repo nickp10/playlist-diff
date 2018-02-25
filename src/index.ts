@@ -1,3 +1,7 @@
+#! /usr/bin/env node
+
 import Diff from "./diff";
 
-new Diff().run();
+(async () => {
+    await new Diff().run();
+})();
