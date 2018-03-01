@@ -4,6 +4,7 @@ import * as FileAsync from "lowdb/adapters/FileAsync";
 import * as lowdb from "lowdb";
 import * as mkdirp from "mkdirp";
 import * as os from "os";
+import * as pm from "playmusic";
 import PlayMusicCache, * as pmc from "./playMusicCache";
 
 interface IDiffPlaylist {
@@ -42,36 +43,27 @@ export default class Shuffler {
     }
 
     async run(): Promise<void> {
-        await this.initializeDB();
-        this.db.defaults({ playlists: [] }).write();
-        this.cache.loginWithToken(Args.androidId, Args.token).then(() => {
-            let playlistPromise: Promise<pm.PlaylistListItem[]>;
+        try {
+            await this.initializeDB();
+            this.db.defaults({ playlists: [] }).write();
+            await this.cache.loginWithToken(Args.androidId, Args.token);
+            let playlists: pm.PlaylistListItem[];
             if (Args.input.length === 0) {
-                playlistPromise = this.cache.getAllPlaylists();
+                playlists = await this.cache.getAllPlaylists();
             } else {
-                playlistPromise = this.cache.getPlaylistsByName(Args.input);
+                playlists = await this.cache.getPlaylistsByName(Args.input);
             }
-            playlistPromise.then((playlists) => {
-                this.cache.populatePlaylistTracks(playlists).then((newPlaylists) => {
-                    newPlaylists.forEach((playlist) => {
-                        this.performDiff(playlist);
-                    })
-                    process.exit();
-                }, (error) => {
-                    console.error(error);
-                    process.exit();
-                });
-            }, (error) => {
-                console.error(error);
-                process.exit();
-            });
-        }, (error) => {
+            const newPlaylists = await this.cache.populatePlaylistTracks(playlists);
+            for (let i = 0; i < newPlaylists.length; i++) {
+                const playlist = newPlaylists[i];
+                await this.performDiff(playlist);
+            }
+        } catch (error) {
             console.error(error);
-            process.exit();
-        });
+        }
     }
 
-    private performDiff(playlist: pmc.IPlaylistTrackContainer): void {
+    private async performDiff(playlist: pmc.IPlaylistTrackContainer): Promise<void> {
         console.log(`Playlist "${playlist.playlist.name}":`);
         const baseline = <IDiffPlaylist>this.db.get("playlists").find({playlistId: playlist.playlist.id}).value();
         const current = this.createSerializablePlaylist(playlist);
@@ -117,10 +109,10 @@ export default class Shuffler {
             if (firstBaseline && firstCurrent) {
                 console.log(chalk.blue("  Nothing has changed since the last comparison."));
             }
-            this.db.get("playlists").find({playlistId: playlist.playlist.id}).assign(current).write();
+            await this.db.get("playlists").find({playlistId: playlist.playlist.id}).assign(current).write();
         } else {
             console.log(chalk.blue("  No baseline to compare against. A baseline has been created."));
-            this.db.get("playlists").push(current).write();
+            await this.db.get("playlists").push(current).write();
         }
     }
 

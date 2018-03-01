@@ -1,4 +1,5 @@
 const argv = require("argv");
+const babel = require("gulp-babel");
 const gulp = require("gulp");
 const path = require("path");
 const sourcemaps = require("gulp-sourcemaps");
@@ -21,6 +22,13 @@ gulp.task("compile", () => {
                 const rootToSource = path.relative(__dirname, to);
                 const fileName = path.basename(sourcePath);
                 return path.join(buildToRoot, rootToSource, fileName);
+            }))
+            .pipe(babel({
+                presets: [
+                    ["env", {
+                        "useBuiltIns": "usage"
+                    }]
+                ]
             }))
             .pipe(sourcemaps.write(""))
             .pipe(gulp.dest(dest));
