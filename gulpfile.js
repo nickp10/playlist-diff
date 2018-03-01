@@ -4,12 +4,13 @@ const gulp = require("gulp");
 const path = require("path");
 const sourcemaps = require("gulp-sourcemaps");
 const typescript = require("gulp-typescript");
+const uglify = require("gulp-uglify");
 
 const args = argv.option({name: "env", short: "e", type: "string"}).run();
 const isDebug = args.options["env"] === "debug";
 const destDirname = isDebug ? "debug" : "build"
 const dest = `./${destDirname}`;
-const tsconfig = typescript.createProject("tsconfig.json");
+const tsconfig = () => typescript("tsconfig.json");
 
 gulp.task("compile", () => {
     const src = gulp.src(["./src/**/*.ts", "!./src/**/*.d.ts"], { base: "./src" });
@@ -26,7 +27,7 @@ gulp.task("compile", () => {
             .pipe(babel({
                 presets: [
                     ["env", {
-                        "useBuiltIns": "usage"
+                        useBuiltIns: "usage"
                     }]
                 ]
             }))
@@ -34,6 +35,14 @@ gulp.task("compile", () => {
             .pipe(gulp.dest(dest));
     } else {
         return src.pipe(tsconfig())
+            .pipe(babel({
+                presets: [
+                    ["env", {
+                        useBuiltIns: "usage"
+                    }]
+                ]
+            }))
+            .pipe(uglify())
             .pipe(gulp.dest(dest));
     }
 });
