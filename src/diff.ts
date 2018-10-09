@@ -22,7 +22,7 @@ interface IDiffTrack {
 
 export default class Shuffler {
     cache = new PlayMusicCache();
-    db: lowdb.Lowdb<any, lowdb.AdapterAsync>;
+    db: lowdb.LowdbAsync<any>;
 
     async initializeDB(): Promise<void> {
         this.db = await lowdb(new FileAsync(this.getDBPath()));
