@@ -18,10 +18,8 @@
   },
   "homepage": "https://github.com/nickp10/playlist-diff#readme",
   "scripts": {
-    "build": "gulp build",
-    "build-debug": "gulp build -e debug",
-    "compile": "gulp compile",
-    "compile-debug": "gulp compile -e debug",
+    "build": "webpack --config webpack.prod.js",
+    "build-debug": "webpack --config webpack.dev.js",
     "prepare": "npm run build",
     "start": "node build/index.js"
   },
@@ -34,19 +32,20 @@
     "playmusic": "github:nickp10/playmusic"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.2",
+    "@babel/core": "^7.1.6",
     "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-env": "^7.1.6",
     "@types/argv": "0.0.4",
     "@types/lowdb": "^1.0.6",
     "@types/mkdirp": "^0.5.2",
-    "@types/node": "^10.11.6",
+    "@types/node": "^10.12.10",
     "@types/playmusic": "^2.3.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^8.0.0",
-    "gulp-sourcemaps": "^2.6.4",
-    "gulp-typescript": "^5.0.0-alpha.3",
-    "gulp-uglify": "^3.0.1",
-    "typescript": "^3.1.2"
+    "babel-loader": "^8.0.4",
+    "path": "^0.12.7",
+    "ts-loader": "^5.3.1",
+    "typescript": "^3.1.6",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-merge": "^4.1.4"
   }
 }
