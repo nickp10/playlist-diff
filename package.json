@@ -26,26 +26,27 @@
   "dependencies": {
     "argv": "0.0.2",
     "chalk": "^2.4.2",
-    "lodash": "^4.17.11",
+    "core-js": "^3.1.4",
+    "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
     "mkdirp": "^0.5.1",
-    "playmusic": "github:nickp10/playmusic"
+    "playmusic": "github:nickp10/playmusic",
+    "regenerator-runtime": "^0.13.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.3.3",
-    "@babel/polyfill": "^7.2.5",
-    "@babel/preset-env": "^7.3.1",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "@types/argv": "0.0.4",
-    "@types/lowdb": "^1.0.6",
+    "@types/lowdb": "^1.0.9",
     "@types/mkdirp": "^0.5.2",
-    "@types/node": "^11.9.4",
+    "@types/node": "^12.6.8",
     "@types/playmusic": "^2.3.0",
-    "babel-loader": "^8.0.5",
+    "babel-loader": "^8.0.6",
     "path": "^0.12.7",
-    "ts-loader": "^5.3.3",
-    "typescript": "^3.3.3",
-    "webpack": "^4.29.5",
-    "webpack-cli": "^3.2.3",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "webpack": "^4.37.0",
+    "webpack-cli": "^3.3.6",
     "webpack-merge": "^4.2.1"
   }
 }

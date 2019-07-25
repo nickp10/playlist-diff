@@ -7,6 +7,10 @@ import * as os from "os";
 import * as pm from "playmusic";
 import PlayMusicCache, * as pmc from "./playMusicCache";
 
+interface DBSchema {
+    playlists: IDiffPlaylist[];
+}
+
 interface IDiffPlaylist {
     name: string;
     playlistId: string;
@@ -22,7 +26,7 @@ interface IDiffTrack {
 
 export default class Shuffler {
     cache = new PlayMusicCache();
-    db: lowdb.LowdbAsync<any>;
+    db: lowdb.LowdbAsync<DBSchema>;
 
     async initializeDB(): Promise<void> {
         this.db = await lowdb(new FileAsync(this.getDBPath()));
@@ -65,7 +69,7 @@ export default class Shuffler {
 
     private async performDiff(playlist: pmc.IPlaylistTrackContainer): Promise<void> {
         console.log(`Playlist "${playlist.playlist.name}":`);
-        const baseline = <IDiffPlaylist>this.db.get("playlists").find({playlistId: playlist.playlist.id}).value();
+        const baseline = this.db.get("playlists").find({playlistId: playlist.playlist.id}).value();
         const current = this.createSerializablePlaylist(playlist);
         if (baseline) {
             const baselineFlags = {}, currentFlags = {};
