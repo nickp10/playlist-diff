@@ -69,54 +69,68 @@ export default class Shuffler {
 
     private async performDiff(playlist: pmc.IPlaylistTrackContainer): Promise<void> {
         console.log(`Playlist "${playlist.playlist.name}":`);
-        const baseline = this.db.get("playlists").find({playlistId: playlist.playlist.id}).value();
         const current = this.createSerializablePlaylist(playlist);
-        if (baseline) {
-            const baselineFlags = {}, currentFlags = {};
-            baseline.tracks.forEach((baselineTrack) => {
-                baselineFlags[baselineTrack.trackId] = baselineTrack;
-            });
-            current.tracks.forEach((currentTrack) => {
-                if (baselineFlags[currentTrack.trackId]) {
-                    delete baselineFlags[currentTrack.trackId];
-                } else {
-                    currentFlags[currentTrack.trackId] = currentTrack;
-                }
-            });
 
-            // Display deleted tracks
-            let firstBaseline = true;
-            for (let baselineFlag in baselineFlags) {
-                if (baselineFlags.hasOwnProperty(baselineFlag)) {
-                    const track: IDiffTrack = baselineFlags[baselineFlag];
-                    if (firstBaseline) {
-                        console.log("  Deleted tracks:");
-                        firstBaseline = false;
-                    }
-                    console.log(chalk.red(`  ${track.artist} "${track.title}" (from ${track.album})"`));
-                }
-            }
-
-            // Display added tracks
-            let firstCurrent = true;
-            for (let currentFlag in currentFlags) {
-                if (currentFlags.hasOwnProperty(currentFlag)) {
-                    const track: IDiffTrack = currentFlags[currentFlag];
-                    if (firstCurrent) {
-                        console.log("  Added tracks:");
-                        firstCurrent = false;
-                    }
-                    console.log(chalk.green(`  ${track.artist} "${track.title}" (from ${track.album})"`));
-                }
-            }
-
-            if (firstBaseline && firstCurrent) {
-                console.log(chalk.blue("  Nothing has changed since the last comparison."));
-            }
+        // Find baseline by playlist ID first (in case the playlist was renamed)
+        const baselineById = this.db.get("playlists").find({playlistId: playlist.playlist.id}).value();
+        if (baselineById) {
+            this.performDiffAgainstBaseline(baselineById, current);
             await this.db.get("playlists").find({playlistId: playlist.playlist.id}).assign(current).write();
         } else {
-            console.log(chalk.blue("  No baseline to compare against. A baseline has been created."));
-            await this.db.get("playlists").push(current).write();
+            // Find baseline by playlist name second (in case a new playlist was created with the same name)
+            const baselineByName = this.db.get("playlists").find({name: playlist.playlist.name}).value();
+            if (baselineByName) {
+                this.performDiffAgainstBaseline(baselineByName, current);
+                await this.db.get("playlists").find({name: playlist.playlist.name}).assign(current).write();
+            } else {
+                // Could not find a baseline to compare with
+                console.log(chalk.blue("  No baseline to compare against. A baseline has been created."));
+                await this.db.get("playlists").push(current).write();
+            }
+        }
+    }
+
+    private performDiffAgainstBaseline(baseline: IDiffPlaylist, current: IDiffPlaylist): void {
+        const baselineFlags = {}, currentFlags = {};
+        baseline.tracks.forEach((baselineTrack) => {
+            baselineFlags[baselineTrack.trackId] = baselineTrack;
+        });
+        current.tracks.forEach((currentTrack) => {
+            if (baselineFlags[currentTrack.trackId]) {
+                delete baselineFlags[currentTrack.trackId];
+            } else {
+                currentFlags[currentTrack.trackId] = currentTrack;
+            }
+        });
+
+        // Display deleted tracks
+        let firstBaseline = true;
+        for (let baselineFlag in baselineFlags) {
+            if (baselineFlags.hasOwnProperty(baselineFlag)) {
+                const track: IDiffTrack = baselineFlags[baselineFlag];
+                if (firstBaseline) {
+                    console.log("  Deleted tracks:");
+                    firstBaseline = false;
+                }
+                console.log(chalk.red(`  ${track.artist} "${track.title}" (from ${track.album})"`));
+            }
+        }
+
+        // Display added tracks
+        let firstCurrent = true;
+        for (let currentFlag in currentFlags) {
+            if (currentFlags.hasOwnProperty(currentFlag)) {
+                const track: IDiffTrack = currentFlags[currentFlag];
+                if (firstCurrent) {
+                    console.log("  Added tracks:");
+                    firstCurrent = false;
+                }
+                console.log(chalk.green(`  ${track.artist} "${track.title}" (from ${track.album})"`));
+            }
+        }
+
+        if (firstBaseline && firstCurrent) {
+            console.log(chalk.blue("  Nothing has changed since the last comparison."));
         }
     }
 
