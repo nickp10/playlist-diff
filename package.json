@@ -39,14 +39,14 @@
     "@types/argv": "0.0.4",
     "@types/lowdb": "^1.0.9",
     "@types/mkdirp": "^0.5.2",
-    "@types/node": "^12.7.4",
+    "@types/node": "^12.7.5",
     "@types/playmusic": "^2.3.0",
     "babel-loader": "^8.0.6",
     "path": "^0.12.7",
-    "ts-loader": "^6.0.4",
-    "typescript": "^3.6.2",
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.8",
+    "ts-loader": "^6.1.0",
+    "typescript": "^3.6.3",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9",
     "webpack-merge": "^4.2.2"
   }
 }
