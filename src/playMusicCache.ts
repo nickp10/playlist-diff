@@ -71,7 +71,7 @@ export default class PlayMusicCache {
         const playlistDetails: IPlaylistDetail[] = [];
         for (let i = 0; i < playlists.length; i++) {
             const playlist = playlists[i];
-            const playlistDetail = await ytma.getPlaylist(playlist.id);
+            const playlistDetail = await ytma.getPlaylist(playlist.id, 10);
             playlistDetails.push(playlistDetail);
         }
         return playlistDetails;
