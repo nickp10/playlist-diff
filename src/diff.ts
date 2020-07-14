@@ -4,7 +4,7 @@ import * as FileAsync from "lowdb/adapters/FileAsync";
 import * as lowdb from "lowdb";
 import * as mkdirp from "mkdirp";
 import * as os from "os";
-import * as pm from "playmusic";
+import { IPlaylistDetail, IPlaylistSummary, ITrackDetail } from "youtube-music-ts-api/interfaces-supplementary";
 import PlayMusicCache, * as pmc from "./playMusicCache";
 
 interface DBSchema {
@@ -25,10 +25,11 @@ interface IDiffTrack {
 }
 
 export default class Shuffler {
-    cache = new PlayMusicCache();
+    cache: PlayMusicCache;
     db: lowdb.LowdbAsync<DBSchema>;
 
     async initializeDB(): Promise<void> {
+        this.cache = new PlayMusicCache(Args.cookie);
         this.db = await lowdb(new FileAsync(this.getDBPath()));
     }
 
@@ -50,8 +51,7 @@ export default class Shuffler {
         try {
             await this.initializeDB();
             this.db.defaults({ playlists: [] }).write();
-            await this.cache.loginWithToken(Args.androidId, Args.token);
-            let playlists: pm.PlaylistListItem[];
+            let playlists: IPlaylistSummary[];
             if (Args.input.length === 0) {
                 playlists = await this.cache.getAllPlaylists();
             } else {
@@ -67,21 +67,21 @@ export default class Shuffler {
         }
     }
 
-    private async performDiff(playlist: pmc.IPlaylistTrackContainer): Promise<void> {
-        console.log(`Playlist "${playlist.playlist.name}":`);
+    private async performDiff(playlist: IPlaylistDetail): Promise<void> {
+        console.log(`Playlist "${playlist.name}":`);
         const current = this.createSerializablePlaylist(playlist);
 
         // Find baseline by playlist ID first (in case the playlist was renamed)
-        const baselineById = this.db.get("playlists").find({playlistId: playlist.playlist.id}).value();
+        const baselineById = this.db.get("playlists").find({playlistId: playlist.id}).value();
         if (baselineById) {
             this.performDiffAgainstBaseline(baselineById, current);
-            await this.db.get("playlists").find({playlistId: playlist.playlist.id}).assign(current).write();
+            await this.db.get("playlists").find({playlistId: playlist.id}).assign(current).write();
         } else {
             // Find baseline by playlist name second (in case a new playlist was created with the same name)
-            const baselineByName = this.db.get("playlists").find({name: playlist.playlist.name}).value();
+            const baselineByName = this.db.get("playlists").find({name: playlist.name}).value();
             if (baselineByName) {
                 this.performDiffAgainstBaseline(baselineByName, current);
-                await this.db.get("playlists").find({name: playlist.playlist.name}).assign(current).write();
+                await this.db.get("playlists").find({name: playlist.name}).assign(current).write();
             } else {
                 // Could not find a baseline to compare with
                 console.log(chalk.blue("  No baseline to compare against. A baseline has been created."));
@@ -125,7 +125,7 @@ export default class Shuffler {
                     console.log("  Added tracks:");
                     firstCurrent = false;
                 }
-                console.log(chalk.green(`  ${track.artist} "${track.title}" (from ${track.album})"`));
+                console.log(chalk.green(`  ${track.artist} "${track.title}" (from ${track.album})`));
             }
         }
 
@@ -134,20 +134,20 @@ export default class Shuffler {
         }
     }
 
-    private createSerializablePlaylist(playlist: pmc.IPlaylistTrackContainer): IDiffPlaylist {
+    private createSerializablePlaylist(playlist: IPlaylistDetail): IDiffPlaylist {
         return {
-            name: playlist.playlist.name,
-            playlistId: playlist.playlist.id,
+            name: playlist.name,
+            playlistId: playlist.id,
             tracks: playlist.tracks.map((track) => this.createSerializableTrack(track))
         };
     }
 
-    private createSerializableTrack(track: pm.PlaylistItem): IDiffTrack {
+    private createSerializableTrack(track: ITrackDetail): IDiffTrack {
         return {
-            album: track.track.album,
-            artist: track.track.artist,
-            title: track.track.title,
-            trackId: track.trackId
+            album: track.album ? track.album.name : undefined,
+            artist: Array.isArray(track.artists) && track.artists.length > 0 ? track.artists[0].name : undefined,
+            title: track.title,
+            trackId: track.id
         };
     }
 }
