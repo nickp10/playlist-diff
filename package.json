@@ -31,7 +31,7 @@
     "lowdb": "^1.0.0",
     "mkdirp": "^1.0.4",
     "regenerator-runtime": "^0.13.5",
-    "youtube-music-ts-api": "^1.0.1"
+    "youtube-music-ts-api": "^1.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
