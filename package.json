@@ -25,28 +25,27 @@
   },
   "dependencies": {
     "argv": "0.0.2",
-    "chalk": "^4.0.0",
+    "chalk": "^4.1.0",
     "core-js": "^3.6.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "lowdb": "^1.0.0",
     "mkdirp": "^1.0.4",
-    "playmusic": "github:nickp10/playmusic",
-    "regenerator-runtime": "^0.13.5"
+    "regenerator-runtime": "^0.13.5",
+    "youtube-music-ts-api": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.1",
-    "@babel/preset-env": "^7.10.1",
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
     "@types/argv": "0.0.4",
     "@types/lowdb": "^1.0.9",
-    "@types/mkdirp": "^1.0.0",
-    "@types/node": "^14.0.6",
-    "@types/playmusic": "^2.3.0",
+    "@types/mkdirp": "^1.0.1",
+    "@types/node": "^14.0.23",
     "babel-loader": "^8.1.0",
     "path": "^0.12.7",
-    "ts-loader": "^7.0.5",
-    "typescript": "^3.9.3",
+    "ts-loader": "^8.0.0",
+    "typescript": "^3.9.6",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11",
-    "webpack-merge": "^4.2.2"
+    "webpack-cli": "^3.3.12",
+    "webpack-merge": "^5.0.9"
   }
 }
