@@ -68,7 +68,7 @@ export default class Shuffler {
     }
 
     private async performDiff(playlist: IPlaylistDetail): Promise<void> {
-        console.log(`Playlist "${playlist.name}" (${playlist.count} tracks):`);
+        console.log(`Playlist "${playlist.name}" (${playlist.tracks.length} tracks):`);
         const current = this.createSerializablePlaylist(playlist);
 
         // Find baseline by playlist ID first (in case the playlist was renamed)
