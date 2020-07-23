@@ -30,8 +30,8 @@
     "lodash": "^4.17.19",
     "lowdb": "^1.0.0",
     "mkdirp": "^1.0.4",
-    "regenerator-runtime": "^0.13.5",
-    "youtube-music-ts-api": "^1.1.0"
+    "regenerator-runtime": "^0.13.7",
+    "youtube-music-ts-api": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
@@ -39,7 +39,7 @@
     "@types/argv": "0.0.4",
     "@types/lowdb": "^1.0.9",
     "@types/mkdirp": "^1.0.1",
-    "@types/node": "^14.0.23",
+    "@types/node": "^14.0.24",
     "babel-loader": "^8.1.0",
     "path": "^0.12.7",
     "ts-loader": "^8.0.1",
