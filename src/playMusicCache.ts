@@ -88,6 +88,8 @@ export default class PlayMusicCache {
             return this.ytma;
         }
         const ytm = new YouTubeMusic();
-        return await ytm.authenticate(this.cookiesStr);
+        const ytma = await ytm.authenticate(this.cookiesStr);
+        this.ytma = ytma;
+        return this.ytma;
     }
 }
