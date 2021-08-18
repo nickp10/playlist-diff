@@ -112,7 +112,7 @@ export default class Shuffler {
                     console.log("  Deleted tracks:");
                     firstBaseline = false;
                 }
-                console.log(chalk.red(`  ${track.artist} "${track.title}" (from ${track.album})"`));
+                console.log(chalk.red(`  ${track.artist} "${track.title}" (from ${track.album})`));
             }
         }
 
