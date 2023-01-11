@@ -1,5 +1,5 @@
 import * as Args from "./args";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as FileAsync from "lowdb/adapters/FileAsync";
 import * as lowdb from "lowdb";
 import * as mkdirp from "mkdirp";
