@@ -1,15 +1,9 @@
 import * as Args from "./args";
 import * as chalk from "chalk";
-import * as FileAsync from "lowdb/adapters/FileAsync";
-import * as lowdb from "lowdb";
-import * as mkdirp from "mkdirp";
 import * as os from "os";
+import { mkdir, readFile, writeFile } from "fs/promises";
 import { IPlaylistDetail, IPlaylistSummary, ITrackDetail } from "youtube-music-ts-api/interfaces-supplementary";
-import PlayMusicCache, * as pmc from "./playMusicCache";
-
-interface DBSchema {
-    playlists: IDiffPlaylist[];
-}
+import PlayMusicCache from "./playMusicCache";
 
 interface IDiffPlaylist {
     name: string;
@@ -26,14 +20,28 @@ interface IDiffTrack {
 
 export default class Shuffler {
     cache: PlayMusicCache;
-    db: lowdb.LowdbAsync<DBSchema>;
+    playlists: IDiffPlaylist[];
 
-    async initializeDB(): Promise<void> {
+    async initialize(): Promise<void> {
         this.cache = new PlayMusicCache(Args.cookie);
-        this.db = await lowdb(new FileAsync(this.getDBPath()));
+        try {
+            const contents = await readFile(await this.getDBPath(), "utf-8");
+            const jsonObj = JSON.parse(contents);
+            this.playlists = Array.isArray(jsonObj) ? jsonObj : [];
+        } catch (error) {
+            this.playlists = [];
+        }
     }
 
-    getDBPath(): string {
+    async savePlaylists(): Promise<void> {
+        try {
+            const contents = JSON.stringify(this.playlists, undefined, 2);
+            await writeFile(await this.getDBPath(), contents, "utf-8");
+        } catch (error) {
+        }
+    }
+
+    async getDBPath(): Promise<string> {
         const penv: any = process.env;
         let home = penv.LOCALAPPDATA;
         if (!home) {
@@ -43,14 +51,13 @@ export default class Shuffler {
             }
         }
         const diffDir = `${home}/playlist-diff`;
-        mkdirp.sync(diffDir);
+        await mkdir(diffDir, { recursive: true });
         return `${diffDir}/diff.json`;
     }
 
     async run(): Promise<void> {
         try {
-            await this.initializeDB();
-            this.db.defaults({ playlists: [] }).write();
+            await this.initialize();
             let playlists: IPlaylistSummary[];
             if (Args.input.length === 0) {
                 playlists = await this.cache.getAllPlaylists();
@@ -72,20 +79,33 @@ export default class Shuffler {
         const current = this.createSerializablePlaylist(playlist);
 
         // Find baseline by playlist ID first (in case the playlist was renamed)
-        const baselineById = this.db.get("playlists").find({playlistId: playlist.id}).value();
+        const baselineById = this.playlists.find(p => p.playlistId === playlist.id);
         if (baselineById) {
             this.performDiffAgainstBaseline(baselineById, current);
-            await this.db.get("playlists").find({playlistId: playlist.id}).assign(current).write();
+            this.playlists = this.playlists.map(p => {
+                if (p === baselineById) {
+                    return current;
+                }
+                return p;
+            });
+            await this.savePlaylists();
         } else {
             // Find baseline by playlist name second (in case a new playlist was created with the same name)
-            const baselineByName = this.db.get("playlists").find({name: playlist.name}).value();
+            const baselineByName = this.playlists.find(p => p.name === playlist.name);
             if (baselineByName) {
                 this.performDiffAgainstBaseline(baselineByName, current);
-                await this.db.get("playlists").find({name: playlist.name}).assign(current).write();
+                this.playlists = this.playlists.map(p => {
+                    if (p === baselineByName) {
+                        return current;
+                    }
+                    return p;
+                });
+                await this.savePlaylists();
             } else {
                 // Could not find a baseline to compare with
                 console.log(chalk.blue("  No baseline to compare against. A baseline has been created."));
-                await this.db.get("playlists").push(current).write();
+                this.playlists.push(current);
+                await this.savePlaylists();
             }
         }
     }
