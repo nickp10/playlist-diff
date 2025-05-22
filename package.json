@@ -26,21 +26,21 @@
   "dependencies": {
     "argv": "^0.0.3",
     "chalk": "^4.1.2",
-    "core-js": "^3.40.0",
+    "core-js": "^3.42.0",
     "lodash": "^4.17.21",
     "regenerator-runtime": "^0.14.1",
-    "youtube-music-ts-api": "^1.8.3"
+    "youtube-music-ts-api": "^1.8.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.7",
-    "@babel/preset-env": "^7.26.7",
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
     "@types/argv": "^0.0.8",
-    "@types/node": "^22.13.0",
-    "babel-loader": "^9.2.1",
+    "@types/node": "^22.15.21",
+    "babel-loader": "^10.0.0",
     "path": "^0.12.7",
     "ts-loader": "^9.5.2",
-    "typescript": "^5.7.3",
-    "webpack": "^5.97.1",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1",
     "webpack-merge": "^6.0.1"
   }
