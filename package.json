@@ -1,7 +1,7 @@
 {
   "name": "playlist-diff",
   "version": "1.0.0",
-  "description": "Tracks differences in Google Play playlists over time",
+  "description": "Tracks differences in YouTube Music playlists over time",
   "bin": "build/index.js",
   "main": "build/index.js",
   "files": [
@@ -26,21 +26,21 @@
   "dependencies": {
     "argv": "^0.0.3",
     "chalk": "^4.1.2",
-    "core-js": "^3.42.0",
-    "lodash": "^4.17.21",
+    "core-js": "^3.48.0",
+    "lodash": "^4.17.23",
     "regenerator-runtime": "^0.14.1",
     "youtube-music-ts-api": "^1.8.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.1",
-    "@babel/preset-env": "^7.27.2",
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0",
     "@types/argv": "^0.0.8",
-    "@types/node": "^22.15.21",
+    "@types/node": "^25.2.3",
     "babel-loader": "^10.0.0",
     "path": "^0.12.7",
-    "ts-loader": "^9.5.2",
-    "typescript": "^5.8.3",
-    "webpack": "^5.99.9",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "webpack": "^5.105.1",
     "webpack-cli": "^6.0.1",
     "webpack-merge": "^6.0.1"
   }
