@@ -3,9 +3,9 @@ import { IYouTubeMusicAuthenticated } from "youtube-music-ts-api/interfaces-prim
 import { IPlaylistDetail, IPlaylistSummary } from "youtube-music-ts-api/interfaces-supplementary";
 
 export default class PlayMusicCache {
-    cachedPlaylists: IPlaylistSummary[];
+    cachedPlaylists?: IPlaylistSummary[];
     cookiesStr: string;
-    ytma: IYouTubeMusicAuthenticated;
+    ytma!: IYouTubeMusicAuthenticated;
 
     constructor(cookiesStr: string) {
         this.cookiesStr = cookiesStr;
@@ -34,10 +34,10 @@ export default class PlayMusicCache {
     async getPlaylistsByName(playlistNames: string[]): Promise<IPlaylistSummary[]> {
         const allPlaylists = await this.getAllPlaylists();
         const playlists: IPlaylistSummary[] = [];
-        let errorPlaylistName: string;
+        let errorPlaylistName: string | undefined;
         for (let i = 0; i < playlistNames.length; i++) {
             const playlistName = playlistNames[i];
-            let foundPlaylist: IPlaylistSummary;
+            let foundPlaylist: IPlaylistSummary | undefined;
             for (let j = 0; j < allPlaylists.length; j++) {
                 const playlistItem = allPlaylists[j];
                 if (playlistItem.name === playlistName) {
@@ -71,6 +71,9 @@ export default class PlayMusicCache {
         const playlistDetails: IPlaylistDetail[] = [];
         for (let i = 0; i < playlists.length; i++) {
             const playlist = playlists[i];
+            if (!playlist.id) {
+                continue;
+            }
             console.log(`Populating "${playlist.name}"`);
             const playlistDetail = await ytma.getPlaylist(playlist.id, 10);
             playlistDetails.push(playlistDetail);

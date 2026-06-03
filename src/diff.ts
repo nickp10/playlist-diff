@@ -1,5 +1,5 @@
 import * as Args from "./args";
-import * as chalk from "chalk";
+import chalk from "chalk";
 import * as os from "os";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { IPlaylistDetail, IPlaylistSummary, ITrackDetail } from "youtube-music-ts-api/interfaces-supplementary";
@@ -19,8 +19,8 @@ interface IDiffTrack {
 }
 
 export default class Shuffler {
-    cache: PlayMusicCache;
-    playlists: IDiffPlaylist[];
+    cache!: PlayMusicCache;
+    playlists!: IDiffPlaylist[];
 
     async initialize(): Promise<void> {
         this.cache = new PlayMusicCache(Args.cookie);
@@ -75,7 +75,7 @@ export default class Shuffler {
     }
 
     private async performDiff(playlist: IPlaylistDetail): Promise<void> {
-        console.log(`Playlist "${playlist.name}" (${playlist.tracks.length} tracks):`);
+        console.log(`Playlist "${playlist.name}" (${playlist.tracks?.length ?? 0} tracks):`);
         const current = this.createSerializablePlaylist(playlist);
 
         // Find baseline by playlist ID first (in case the playlist was renamed)
@@ -111,7 +111,7 @@ export default class Shuffler {
     }
 
     private performDiffAgainstBaseline(baseline: IDiffPlaylist, current: IDiffPlaylist): void {
-        const baselineFlags = {}, currentFlags = {};
+        const baselineFlags: { [key: string]: IDiffTrack } = {}, currentFlags: { [key: string]: IDiffTrack } = {};
         baseline.tracks.forEach((baselineTrack) => {
             baselineFlags[baselineTrack.trackId] = baselineTrack;
         });
@@ -156,18 +156,18 @@ export default class Shuffler {
 
     private createSerializablePlaylist(playlist: IPlaylistDetail): IDiffPlaylist {
         return {
-            name: playlist.name,
-            playlistId: playlist.id,
-            tracks: playlist.tracks.map((track) => this.createSerializableTrack(track))
+            name: playlist.name ?? "",
+            playlistId: playlist.id ?? "",
+            tracks: (playlist.tracks ?? []).map((track) => this.createSerializableTrack(track))
         };
     }
 
     private createSerializableTrack(track: ITrackDetail): IDiffTrack {
         return {
-            album: track.album ? track.album.name : undefined,
-            artist: Array.isArray(track.artists) && track.artists.length > 0 ? track.artists[0].name : undefined,
-            title: track.title,
-            trackId: track.id
+            album: track.album?.name ?? "",
+            artist: Array.isArray(track.artists) && track.artists.length > 0 ? track.artists[0].name ?? "" : "",
+            title: track.title ?? "",
+            trackId: track.id ?? ""
         };
     }
 }
