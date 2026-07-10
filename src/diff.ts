@@ -1,29 +1,18 @@
 import * as Args from "./args";
 import chalk from "chalk";
 import * as os from "os";
+import readline from 'readline/promises';
 import { mkdir, readFile, writeFile } from "fs/promises";
+import { IDiffPlaylist, IDiffTrack } from "./interfaces";
 import { IPlaylistDetail, IPlaylistSummary, ITrackDetail } from "youtube-music-ts-api/interfaces-supplementary";
 import PlayMusicCache from "./playMusicCache";
 
-interface IDiffPlaylist {
-    name: string;
-    playlistId: string;
-    tracks: IDiffTrack[];
-}
-
-interface IDiffTrack {
-    album: string;
-    artist: string;
-    title: string;
-    trackId: string;
-}
-
-export default class Shuffler {
+export default class Diff {
     cache!: PlayMusicCache;
     playlists!: IDiffPlaylist[];
 
-    async initialize(): Promise<void> {
-        this.cache = new PlayMusicCache(Args.cookie);
+    async initialize(cookie: string): Promise<void> {
+        this.cache = new PlayMusicCache(cookie);
         try {
             const contents = await readFile(await this.getDBPath(), "utf-8");
             const jsonObj = JSON.parse(contents);
@@ -55,9 +44,10 @@ export default class Shuffler {
         return `${diffDir}/diff.json`;
     }
 
-    async run(): Promise<void> {
+    async run(rl: readline.Interface): Promise<void> {
         try {
-            await this.initialize();
+            const cookie = await rl.question('Enter cookie: ');
+            await this.initialize(cookie);
             let playlists: IPlaylistSummary[];
             if (Args.input.length === 0) {
                 playlists = await this.cache.getAllPlaylists();

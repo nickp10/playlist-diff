@@ -8,6 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Build and Debug",
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}\\debug\\index.js",
             "preLaunchTask": "npm: build-debug",
             "outFiles": [
@@ -18,6 +19,7 @@
             "type": "node",
             "request": "launch",
             "name": "Debug Only",
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}\\debug\\index.js",
             "outFiles": [
                 "${workspaceFolder}/debug/**"

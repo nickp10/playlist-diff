@@ -1,8 +1,8 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
-import Diff from "./diff";
+import Menu from "./menu";
 
 (async () => {
-    await new Diff().run();
+    await new Menu().showMenu();
     process.exit();
 })();
